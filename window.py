@@ -37,6 +37,13 @@ def main():
     cell5.set_walls(True, True, True, False)
     window.draw_cell(cell5, cell_fill_color)
     
+    window.draw_cell_move(cell1, cell2, "red")
+    window.draw_cell_move(cell2, cell3, "red")
+    window.draw_cell_move(cell3, cell4, "red")
+    window.draw_cell_move(cell4, cell5, "red")
+
+
+
     # d = 20
     # x1 = 15
     # y1 = 15
@@ -83,6 +90,9 @@ class Window:
 
     def draw_cell(self, cell, fill_color):
         cell.draw(self.__canvas, fill_color)
+
+    def draw_cell_move(self, from_cell, to_cell, fill_color):
+        from_cell.draw_move(self.__canvas, to_cell, fill_color)
 
 class Point:
     def __init__(self, x, y):
@@ -164,7 +174,16 @@ class Cell:
             bottom_wall = Line(bottom_left_point, bottom_right_point)
             bottom_wall.draw(canvas, fill_color)
 
+    def get_cell_center(self):
+        x_center = self.__x1 + ((self.__x2 - self.__x1) // 2)
+        y_center = self.__y1 + ((self.__y2 - self.__y1) // 2)
+        return Point(x_center, y_center)
 
+    def draw_move(self, canvas, to_cell, fill_color, undo=False):
+        self_center = self.get_cell_center()
+        to_cell_center = to_cell.get_cell_center()
+        move_line = Line(self_center, to_cell_center)
+        move_line.draw(canvas, fill_color)
 
 main()
 
