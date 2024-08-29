@@ -3,52 +3,40 @@ import time
 
 def main():
     print("running...")
-    window = Window(500, 500)
+    # window = Window(500, 500)
 
-    # point_a = Point(15, 15)
-    # point_b = Point(185, 185)
-    # line_a_b = Line(point_a, point_b)
-    # fill_color_red = "red"
-    # window.draw_line(line_a_b, fill_color_red)
+    # cell1 = Cell(15, 15, 185, 185)
+    # cell1.set_walls(True, False, True, True)
+    # window.draw_cell(cell1, cell_fill_color)
 
-    # point_c = Point(185, 15)
-    # point_d = Point(15, 185)
-    # line_c_d = Line(point_c, point_d)
-    # fill_color_black = "black"
-    # window.draw_line(line_c_d, fill_color_black)
+    # cell2 = Cell(190, 15, 360, 185)
+    # cell2.set_walls(False, True, True, False)
+    # window.draw_cell(cell2, cell_fill_color)
 
-    cell1 = Cell(15, 15, 185, 185)
-    cell1.set_walls(True, False, True, True)
-    window.draw_cell(cell1, cell_fill_color)
+    # cell3 = Cell(190, 190, 360, 360)
+    # cell3.set_walls(True, False, False, True)
+    # window.draw_cell(cell3, cell_fill_color)
 
-    cell2 = Cell(190, 15, 360, 185)
-    cell2.set_walls(False, True, True, False)
-    window.draw_cell(cell2, cell_fill_color)
+    # cell4 = Cell(365, 190, 535, 360)
+    # cell4.set_walls(False, True, False, True)
+    # window.draw_cell(cell4, cell_fill_color)
 
-    cell3 = Cell(190, 190, 360, 360)
-    cell3.set_walls(True, False, False, True)
-    window.draw_cell(cell3, cell_fill_color)
-
-    cell4 = Cell(365, 190, 535, 360)
-    cell4.set_walls(False, True, False, True)
-    window.draw_cell(cell4, cell_fill_color)
-
-    cell5 = Cell(365, 15, 535, 185)
-    cell5.set_walls(True, True, True, False)
-    window.draw_cell(cell5, cell_fill_color)
+    # cell5 = Cell(365, 15, 535, 185)
+    # cell5.set_walls(True, True, True, False)
+    # window.draw_cell(cell5, cell_fill_color)
     
-    window.draw_cell_move(cell1, cell2)
-    window.draw_cell_move(cell2, cell3)
-    window.draw_cell_move(cell3, cell4)
-    window.draw_cell_move(cell4, cell5)
-    window.draw_cell_move(cell4, cell5, True)
+    # window.draw_cell_move(cell1, cell2)
+    # window.draw_cell_move(cell2, cell3)
+    # window.draw_cell_move(cell3, cell4)
+    # window.draw_cell_move(cell4, cell5)
+    # window.draw_cell_move(cell4, cell5, True)
 
     # window.wait_for_close()
 
     window2 = Window(500,500)
     maze = Maze(15, 15, 5, 5, 100, 100, window2)
-    window2.draw_maze(maze, "white")
-    window2.draw_maze(maze, "white")
+    maze.draw()
+    # window2.draw_maze(maze, "white")
     window2.wait_for_close()
 
 
@@ -231,11 +219,11 @@ class Maze:
         self.__win.redraw()
         time.sleep(0.1)
     
-    def draw(self, canvas, fill_color):
+    def draw(self, fill_color="white"):
         self._initiate()
         for column in self.__cells:
             for row in column:
-                row.draw(canvas, fill_color)
+                self.__win.draw_cell(row, fill_color)
                 self._animate()
 
     
