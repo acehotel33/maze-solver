@@ -43,22 +43,15 @@ def main():
     window.draw_cell_move(cell4, cell5)
     window.draw_cell_move(cell4, cell5, True)
 
+    # window.wait_for_close()
 
-    # d = 20
-    # x1 = 15
-    # y1 = 15
-    # x2 = 185
-    # y2 = 185
-    # color = ["red", "white"]
+    window2 = Window(500,500)
+    maze = Maze(15, 15, 5, 5, 100, 100, window2)
+    window2.draw_maze(maze, "white")
+    window2.draw_maze(maze, "white")
+    window2.wait_for_close()
 
-    # for i in range(1, 11):
-    #     cell = Cell(x1+d, y1+d, x2+d, y2+d)
-    #     d += 20
-    #     window.draw_cell(cell, color[i%2])
 
-    
-    window.wait_for_close()
-    
 cell_fill_color = "white"
 
 class Window:
@@ -94,6 +87,9 @@ class Window:
     def draw_cell_move(self, from_cell, to_cell, undo=False):
         from_cell.draw_move(self.__canvas, to_cell, undo)
 
+    def draw_maze(self, maze, fill_color):
+        maze.draw(self.__canvas, fill_color)
+
 class Point:
     def __init__(self, x, y):
         self.x = x
@@ -120,7 +116,7 @@ class Cell:
         self.has_right_wall = True
         self.has_top_wall = True
         self.has_bottom_wall = True
-        
+
         self.__x1 = x1
         self.__y1 = y1
         self.__x2 = x2
@@ -133,6 +129,7 @@ class Cell:
         self.bottom_right_corner = Point(x2, y2)
 
         self.__win = False
+        
 
     def set_walls(self, left, right, top, bottom):
         self.has_left_wall = left
@@ -188,6 +185,60 @@ class Cell:
         move_line = Line(self_center, to_cell_center)
         move_line.draw(canvas, fill_color)
 
+
+class Maze:
+    def __init__(
+        self, x1, y1,
+        num_rows, num_cols,
+        cell_size_x, cell_size_y,
+        win
+    ):
+        self.__x1 = x1
+        self.__y1 = y1
+        self.__num_rows = num_rows
+        self.__num_cols = num_cols
+        self.__cell_size_x = cell_size_x
+        self.__cell_size_y = cell_size_y
+        self.__win = win
+        self.__cells = None
+        self.__initiated = False
+
+        self._initiate()
+
+    def _create_cells(self):
+        self.__cells = [[None for row in range(self.__num_rows)] for col in range(self.__num_cols)]
+
+    def _position_cells(self):
+        starting_x = self.__x1
+        starting_y = self.__y1
+
+        for i in range(len(self.__cells)):
+            for j in range(len(self.__cells[i])):
+                self.__cells[i][j] = Cell(starting_x, starting_y, starting_x+ self.__cell_size_x, starting_y + self.__cell_size_y)
+                starting_y += self.__cell_size_y + 5
+            starting_y = self.__y1
+            starting_x += self.__cell_size_x + 5
+
+    def _initiate(self):
+        if self.__initiated == False:
+            self._create_cells()
+            self._position_cells()
+            self.__initiated = True
+            return
+        return
+
+    def _animate(self):
+        self.__win.redraw()
+        time.sleep(0.1)
+    
+    def draw(self, canvas, fill_color):
+        self._initiate()
+        for column in self.__cells:
+            for row in column:
+                row.draw(canvas, fill_color)
+                self._animate()
+
+    
 main()
 
 # from tkinter import *
