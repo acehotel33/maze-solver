@@ -3,7 +3,7 @@ import time
 
 def main():
     print("running...")
-    window = Window(200, 200)
+    window = Window(500, 500)
 
     # point_a = Point(15, 15)
     # point_b = Point(185, 185)
@@ -19,9 +19,37 @@ def main():
 
     cell1 = Cell(15, 15, 185, 185)
     cell1.set_walls(True, False, True, True)
-    cell1.set_walls(False, False, False, True)
     window.draw_cell(cell1, cell_fill_color)
 
+    cell2 = Cell(190, 15, 360, 185)
+    cell2.set_walls(False, True, True, False)
+    window.draw_cell(cell2, cell_fill_color)
+
+    cell3 = Cell(190, 190, 360, 360)
+    cell3.set_walls(True, False, False, True)
+    window.draw_cell(cell3, cell_fill_color)
+
+    cell4 = Cell(365, 190, 535, 360)
+    cell4.set_walls(False, True, False, True)
+    window.draw_cell(cell4, cell_fill_color)
+
+    cell5 = Cell(365, 15, 535, 185)
+    cell5.set_walls(True, True, True, False)
+    window.draw_cell(cell5, cell_fill_color)
+    
+    # d = 20
+    # x1 = 15
+    # y1 = 15
+    # x2 = 185
+    # y2 = 185
+    # color = ["red", "white"]
+
+    # for i in range(1, 11):
+    #     cell = Cell(x1+d, y1+d, x2+d, y2+d)
+    #     d += 20
+    #     window.draw_cell(cell, color[i%2])
+
+    
     window.wait_for_close()
     
 cell_fill_color = "white"
@@ -34,7 +62,7 @@ class Window:
         self.__root.title("Root")
         self.__root.geometry(f"{width}x{height}")
         self.__canvas = Canvas(self.__root)
-        self.__canvas.pack()
+        self.__canvas.pack(fill=BOTH, expand=True)
         self.__window_running = False
         self.__root.protocol("WM_DELETE_WINDOW", self.close)
 
@@ -87,7 +115,7 @@ class Cell:
         self.__y1 = y1
         self.__x2 = x2
         self.__y2 = y2
-        if x1 > x2 or y1 < y2:
+        if x1 > x2 or y1 > y2:
             self.__x1, self.__x2 = self.__x2, self.__x1
             self.__y1, self.__y2 = self.__y2, self.__y1
         
@@ -102,11 +130,23 @@ class Cell:
         self.has_top_wall = top
         self.has_bottom_wall = bottom
 
+    def get_top_left_point(self):
+        return Point(self.__x1, self.__y1)
+    
+    def get_top_right_point(self):
+        return Point(self.__x2, self.__y1)
+
+    def get_bottom_left_point(self):
+        return Point(self.__x1, self.__y2)
+
+    def get_bottom_right_point(self):
+        return Point(self.__x2, self.__y2)
+
     def draw(self, canvas, fill_color):
-        top_left_point = self.top_left_corner
-        top_right_point = Point(self.bottom_right_corner.x, self.top_left_corner.y)
-        bottom_left_point = Point(self.top_left_corner.x, self.bottom_right_corner.y)
-        bottom_right_point = self.bottom_right_corner
+        top_left_point = self.get_top_left_point()
+        bottom_left_point = self.get_bottom_left_point()
+        top_right_point = self.get_top_right_point()
+        bottom_right_point = self.get_bottom_right_point()
 
         if self.has_left_wall:
             left_wall = Line(top_left_point, bottom_left_point)
