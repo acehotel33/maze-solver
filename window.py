@@ -35,7 +35,6 @@ def main():
 
     window2 = Window(500,500)
     maze = Maze(15, 15, 5, 5, 100, 100, window2)
-    print(f"this is {maze.win}")
     maze.draw()
     window2.wait_for_close()
 
@@ -69,8 +68,8 @@ class Window:
     def draw_line(self, line, fill_color):
         line.draw(self.__canvas, fill_color)
 
-    # def draw_cell(self, cell, fill_color):
-    #     cell.draw(self.__canvas, fill_color)
+    def draw_cell(self, cell, fill_color):
+        cell.draw(self.__canvas, fill_color)
 
     def draw_cell_move(self, from_cell, to_cell, undo=False):
         from_cell.draw_move(self.__canvas, to_cell, undo)
@@ -113,7 +112,7 @@ class Cell:
         self.top_left_corner = Point(x1, y1)
         self.bottom_right_corner = Point(x2, y2)
 
-        self.win = win
+        self.__win = win
         
 
     def set_walls(self, left, right, top, bottom):
@@ -134,18 +133,14 @@ class Cell:
     def get_bottom_right_point(self):
         return Point(self.__x2, self.__y2)
 
-    def draw(self, fill_color):
+    def draw(self, canvas, fill_color):
         top_left_point = self.get_top_left_point()
         bottom_left_point = self.get_bottom_left_point()
         top_right_point = self.get_top_right_point()
         bottom_right_point = self.get_bottom_right_point()
 
-        window = self.win
-        canvas = window.__canvas
-
         if self.has_left_wall:
             left_wall = Line(top_left_point, bottom_left_point)
-            print(canvas)
             left_wall.draw(canvas, fill_color)
 
         if self.has_right_wall:
@@ -182,15 +177,13 @@ class Maze:
         cell_size_x, cell_size_y,
         win
     ):
-        self.win = win
-
         self.__x1 = x1
         self.__y1 = y1
         self.__num_rows = num_rows
         self.__num_cols = num_cols
         self.__cell_size_x = cell_size_x
         self.__cell_size_y = cell_size_y
-        
+        self.__win = win
         self.__cells = None
         self.__initiated = False
 
@@ -202,11 +195,10 @@ class Maze:
     def _position_cells(self):
         starting_x = self.__x1
         starting_y = self.__y1
-        window = self.win
 
         for i in range(len(self.__cells)):
             for j in range(len(self.__cells[i])):
-                self.__cells[i][j] = Cell(starting_x, starting_y, starting_x+ self.__cell_size_x, starting_y + self.__cell_size_y, window)
+                self.__cells[i][j] = Cell(starting_x, starting_y, starting_x+ self.__cell_size_x, starting_y + self.__cell_size_y)
                 starting_y += self.__cell_size_y + 5
             starting_y = self.__y1
             starting_x += self.__cell_size_x + 5
@@ -226,8 +218,8 @@ class Maze:
     def draw(self, fill_color="white"):
         self._initiate()
         for column in self.__cells:
-            for cell in column:
-                cell.draw(fill_color)
+            for row in column:
+                self.__win.draw_cell(row, fill_color)
                 self._animate()
 
     
