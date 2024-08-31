@@ -43,36 +43,36 @@ cell_fill_color = "white"
 
 class Window:
     def __init__(self, width, height):
-        self.__width = width
-        self.__height = height
-        self.__root = Tk()
-        self.__root.title("Root")
-        self.__root.geometry(f"{width}x{height}")
-        self.__canvas = Canvas(self.__root)
-        self.__canvas.pack(fill=BOTH, expand=True)
-        self.__window_running = False
-        self.__root.protocol("WM_DELETE_WINDOW", self.close)
+        self._width = width
+        self._height = height
+        self._root = Tk()
+        self._root.title("Root")
+        self._root.geometry(f"{width}x{height}")
+        self._canvas = Canvas(self._root)
+        self._canvas.pack(fill=BOTH, expand=True)
+        self._window_running = False
+        self._root.protocol("WM_DELETE_WINDOW", self.close)
 
     def redraw(self):
-        self.__root.update_idletasks()
-        self.__root.update()
+        self._root.update_idletasks()
+        self._root.update()
 
     def wait_for_close(self):
-        self.__window_running = True
-        while self.__window_running:
+        self._window_running = True
+        while self._window_running:
             self.redraw()
 
     def close(self):
-        self.__window_running = False
+        self._window_running = False
 
     def draw_line(self, line, fill_color):
-        line.draw(self.__canvas, fill_color)
+        line.draw(self._canvas, fill_color)
 
     def draw_cell(self, cell, fill_color):
-        cell.draw(self.__canvas, fill_color)
+        cell.draw(self._canvas, fill_color)
 
     def draw_cell_move(self, from_cell, to_cell, undo=False):
-        from_cell.draw_move(self.__canvas, to_cell, undo)
+        from_cell.draw_move(self._canvas, to_cell, undo)
 
 class Point:
     def __init__(self, x, y):
@@ -101,18 +101,18 @@ class Cell:
         self.has_top_wall = True
         self.has_bottom_wall = True
 
-        self.__x1 = x1
-        self.__y1 = y1
-        self.__x2 = x2
-        self.__y2 = y2
+        self._x1 = x1
+        self._y1 = y1
+        self._x2 = x2
+        self._y2 = y2
         if x1 > x2 or y1 > y2:
-            self.__x1, self.__x2 = self.__x2, self.__x1
-            self.__y1, self.__y2 = self.__y2, self.__y1
+            self._x1, self._x2 = self._x2, self._x1
+            self._y1, self._y2 = self._y2, self._y1
         
         self.top_left_corner = Point(x1, y1)
         self.bottom_right_corner = Point(x2, y2)
 
-        self.__win = win
+        self._win = win
         
 
     def set_walls(self, left, right, top, bottom):
@@ -122,16 +122,16 @@ class Cell:
         self.has_bottom_wall = bottom
 
     def get_top_left_point(self):
-        return Point(self.__x1, self.__y1)
+        return Point(self._x1, self._y1)
     
     def get_top_right_point(self):
-        return Point(self.__x2, self.__y1)
+        return Point(self._x2, self._y1)
 
     def get_bottom_left_point(self):
-        return Point(self.__x1, self.__y2)
+        return Point(self._x1, self._y2)
 
     def get_bottom_right_point(self):
-        return Point(self.__x2, self.__y2)
+        return Point(self._x2, self._y2)
 
     def draw(self, canvas, fill_color):
         top_left_point = self.get_top_left_point()
@@ -156,8 +156,8 @@ class Cell:
             bottom_wall.draw(canvas, fill_color)
 
     def get_cell_center(self):
-        x_center = self.__x1 + ((self.__x2 - self.__x1) // 2)
-        y_center = self.__y1 + ((self.__y2 - self.__y1) // 2)
+        x_center = self._x1 + ((self._x2 - self._x1) // 2)
+        y_center = self._y1 + ((self._y2 - self._y1) // 2)
         return Point(x_center, y_center)
 
     def draw_move(self, canvas, to_cell, undo=False):
@@ -175,55 +175,55 @@ class Maze:
         self, x1, y1,
         num_rows, num_cols,
         cell_size_x, cell_size_y,
-        win
+        win=None
     ):
-        self.__x1 = x1
-        self.__y1 = y1
-        self.__num_rows = num_rows
-        self.__num_cols = num_cols
-        self.__cell_size_x = cell_size_x
-        self.__cell_size_y = cell_size_y
-        self.__win = win
-        self.__cells = None
-        self.__initiated = False
+        self._x1 = x1
+        self._y1 = y1
+        self._num_rows = num_rows
+        self._num_cols = num_cols
+        self._cell_size_x = cell_size_x
+        self._cell_size_y = cell_size_y
+        self._win = win
+        self._cells = None
+        self._initiated = False
 
-        self._initiate()
+        # self._initiate()
 
     def _create_cells(self):
-        self.__cells = [[None for row in range(self.__num_rows)] for col in range(self.__num_cols)]
+        self._cells = [[None for row in range(self._num_rows)] for col in range(self._num_cols)]
 
     def _position_cells(self):
-        starting_x = self.__x1
-        starting_y = self.__y1
+        starting_x = self._x1
+        starting_y = self._y1
 
-        for i in range(len(self.__cells)):
-            for j in range(len(self.__cells[i])):
-                self.__cells[i][j] = Cell(starting_x, starting_y, starting_x+ self.__cell_size_x, starting_y + self.__cell_size_y)
-                starting_y += self.__cell_size_y + 5
-            starting_y = self.__y1
-            starting_x += self.__cell_size_x + 5
+        for i in range(len(self._cells)):
+            for j in range(len(self._cells[i])):
+                self._cells[i][j] = Cell(starting_x, starting_y, starting_x+ self._cell_size_x, starting_y + self._cell_size_y)
+                starting_y += self._cell_size_y + 5
+            starting_y = self._y1
+            starting_x += self._cell_size_x + 5
 
     def _initiate(self):
-        if self.__initiated == False:
+        if self._initiated == False:
             self._create_cells()
             self._position_cells()
-            self.__initiated = True
+            self._initiated = True
             return
         return
 
     def _animate(self):
-        self.__win.redraw()
+        self._win.redraw()
         time.sleep(0.1)
     
     def draw(self, fill_color="white"):
         self._initiate()
-        for column in self.__cells:
+        for column in self._cells:
             for row in column:
-                self.__win.draw_cell(row, fill_color)
+                self._win.draw_cell(row, fill_color)
                 self._animate()
 
-    
-main()
+if __name__ == "__main__":
+    main()
 
 # from tkinter import *
 # from tkinter import ttk
