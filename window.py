@@ -34,8 +34,11 @@ def main():
     # window.wait_for_close()
 
     window2 = Window(500,500)
-    maze = Maze(15, 15, 5, 5, 100, 100, window2)
+    maze = Maze(15, 15, 5, 5, 80, 80, window2)
     maze.draw()
+    maze._break_entrance_and_exit()
+    print(window2.get_default_background_color())
+    print("\n")
     window2.wait_for_close()
 
 
@@ -52,6 +55,15 @@ class Window:
         self._canvas.pack(fill=BOTH, expand=True)
         self._window_running = False
         self._root.protocol("WM_DELETE_WINDOW", self.close)
+
+    def get_default_background_color(self):
+        try:
+            default_bg_color = self._root.cget('background')
+            if default_bg_color:
+                return default_bg_color
+        except Exception as e:
+            print(f"Error retrieving default background color: {e}")
+        return "#ffffff"
 
     def redraw(self):
         self._root.update_idletasks()
@@ -139,21 +151,32 @@ class Cell:
         top_right_point = self.get_top_right_point()
         bottom_right_point = self.get_bottom_right_point()
 
+        background_color = self._win.get_default_background_color()
+
+        left_wall = Line(top_left_point, bottom_left_point)
         if self.has_left_wall:
-            left_wall = Line(top_left_point, bottom_left_point)
             left_wall.draw(canvas, fill_color)
+        else:
+            left_wall.draw(canvas, background_color)
 
+
+        right_wall = Line(top_right_point, bottom_right_point)
         if self.has_right_wall:
-            right_wall = Line(top_right_point, bottom_right_point)
             right_wall.draw(canvas, fill_color)
+        else:
+            right_wall.draw(canvas, background_color)
 
+        top_wall = Line(top_left_point, top_right_point)
         if self.has_top_wall:
-            top_wall = Line(top_left_point, top_right_point)
             top_wall.draw(canvas, fill_color)
+        else:
+            top_wall.draw(canvas, background_color)
 
+        bottom_wall = Line(bottom_left_point, bottom_right_point)
         if self.has_bottom_wall:
-            bottom_wall = Line(bottom_left_point, bottom_right_point)
             bottom_wall.draw(canvas, fill_color)
+        else:
+            bottom_wall.draw(canvas, background_color)
 
     def get_cell_center(self):
         x_center = self._x1 + ((self._x2 - self._x1) // 2)
@@ -198,7 +221,7 @@ class Maze:
 
         for i in range(len(self._cells)):
             for j in range(len(self._cells[i])):
-                self._cells[i][j] = Cell(starting_x, starting_y, starting_x+ self._cell_size_x, starting_y + self._cell_size_y)
+                self._cells[i][j] = Cell(starting_x, starting_y, starting_x+ self._cell_size_x, starting_y + self._cell_size_y, self._win)
                 starting_y += self._cell_size_y + 5
             starting_y = self._y1
             starting_x += self._cell_size_x + 5
@@ -214,13 +237,20 @@ class Maze:
     def _animate(self):
         self._win.redraw()
         time.sleep(0.1)
+
+    def _break_entrance_and_exit(self):
+        self._cells[0][0].set_walls(True, True, False, True)
+        self.draw()
+        self._cells[-1][-1].set_walls(True, True, True, False)
+        self.draw()
+        # left rgiht top bottom
     
     def draw(self, fill_color="white"):
         self._initiate()
         for column in self._cells:
             for row in column:
                 self._win.draw_cell(row, fill_color)
-                self._animate()
+                # self._animate()
 
 if __name__ == "__main__":
     main()
