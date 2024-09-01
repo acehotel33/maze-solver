@@ -37,7 +37,13 @@ def main():
     maze = Maze(15, 15, 5, 5, 80, 80, window2)
     maze.draw()
     maze._break_entrance_and_exit()
-    maze._get_adjacent_cells("yolo")
+    ex_i = 0
+    ex_j = 4
+    example_cell = maze._cells[ex_i][ex_j]
+    maze._get_adjacent_cells_indices(example_cell)
+    print(maze._get_adjacent_cells_indices(example_cell))
+    print(maze._get_adjacent_cells(example_cell))
+
     window2.wait_for_close()
 
 
@@ -251,13 +257,71 @@ class Maze:
         current_cell._visited = True
         while True:
             coordinates_to_visit = []
-            adjacent_cells = _get_adjacent_cells(current_cell)
+            adjacent_cells = self._get_adjacent_cells_indices(current_cell)
 
     def _get_adjacent_cells(self, cell):
+        adjacent_indices = self._get_adjacent_cells_indices(cell)
+        
+        left_indices = adjacent_indices[0]
+        right_indices = adjacent_indices[1]
+        top_indices = adjacent_indices[2]
+        bottom_indices = adjacent_indices[3]
+
+        left_cell = None
+        right_cell = None
+        top_cell = None
+        bottom_cell = None
+
+        if left_indices != None:
+            left_cell = self._cells[left_indices[0]][left_indices[1]]
+        if right_indices != None:
+            right_cell = self._cells[right_indices[0]][right_indices[1]]
+        if top_indices != None:
+            top_cell = self._cells[top_indices[0]][top_indices[1]]
+        if bottom_indices != None:
+            bottom_cell = self._cells[bottom_indices[0]][bottom_indices[1]]
+
+        return [left_cell, right_cell, top_cell, bottom_cell]
+
+
+    def _get_adjacent_cells_indices(self, cell):
         adjacents = []
-        for col in self._cells:
-            for row in col:
-                print(self._get_cell_indices(row))
+        cell_indices = self._get_cell_indices(cell)
+        cell_i = cell_indices[0]
+        cell_j = cell_indices[1]
+
+        top_cell_indices = None
+        bottom_cell_indices = None
+        left_cell_indices = None
+        right_cell_indices = None
+
+        if cell_j > 0:
+            top_cell_indices = (cell_i, cell_j-1)
+
+        if cell_j < self._num_rows-1:
+            bottom_cell_indices = (cell_i, cell_j+1)
+            
+        if cell_i > 0:
+            left_cell_indices = (cell_i-1, cell_j)
+
+        if cell_i < self._num_cols-1:
+            right_cell_indices = (cell_i+1, cell_j)
+        
+        print(f"\nWorking on {cell}\n")
+        print(f"(i, j) = {self._get_cell_indices(cell)}\n")
+        print(f"checking i and j: ({cell_i}, {cell_j})\n")
+
+        print(f"top cell: {top_cell_indices}")
+        print(f"bottom cell: {bottom_cell_indices}")
+        print(f"left cell: {left_cell_indices}")
+        print(f"right cell: {right_cell_indices}")
+
+        # top_cell = self._cells[top_cell_indices[0]][top_cell_indices[1]]
+        # bottom_cell = self._cells[bottom_cell_indices[0]][bottom_cell_indices[1]]
+        # left_cell = self._cells[left_cell_indices[0]][left_cell_indices[1]]
+        # right_cell = self._cells[right_cell_indices[0]][right_cell_indices[1]]
+
+        return [left_cell_indices, right_cell_indices, top_cell_indices, bottom_cell_indices]
 
     def _get_cell_indices(self, cell):
         maze_nested_list = self._cells
@@ -274,6 +338,7 @@ class Maze:
             for row in column:
                 self._win.draw_cell(row, fill_color)
                 self.enumerate_cell(row)
+                # self._get_adjacent_cells_indices(row)
                 self._animate()
 
     def enumerate_cell(self, cell):
