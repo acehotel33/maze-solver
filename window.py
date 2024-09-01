@@ -267,41 +267,24 @@ class Maze:
                 if (item._x1, item._y1) == cell_coordinates:
                     return (i, j)
         return None
-
-        """
-        (55, 55)
-        (55, 140)
-        (55, 225)
-        (55, 310)
-        (55, 395)
-        (140, 55)
-        (140, 140)
-        (140, 225)
-        (140, 310)
-        (140, 395)
-        (225, 55)
-        (225, 140)
-        (225, 225)
-        (225, 310)
-        (225, 395)
-        (310, 55)
-        (310, 140)
-        (310, 225)
-        (310, 310)
-        (310, 395)
-        (395, 55)
-        (395, 140)
-        (395, 225)
-        (395, 310)
-        (395, 395)
-        """
     
     def draw(self, fill_color="white"):
         self._initiate()
         for column in self._cells:
             for row in column:
                 self._win.draw_cell(row, fill_color)
+                self.enumerate_cell(row)
                 self._animate()
+
+    def enumerate_cell(self, cell):
+        center_point_of_cell = cell.get_cell_center()
+        cell_indices = self._get_cell_indices(cell)
+        self._win._canvas.create_text(
+            center_point_of_cell.x,
+            center_point_of_cell.y,
+            text=f"{cell_indices}",
+            fill="white"
+        )
 
 if __name__ == "__main__":
     main()
