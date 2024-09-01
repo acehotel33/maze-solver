@@ -37,8 +37,7 @@ def main():
     maze = Maze(15, 15, 5, 5, 80, 80, window2)
     maze.draw()
     maze._break_entrance_and_exit()
-    print(window2.get_default_background_color())
-    print("\n")
+    maze._get_adjacent_cells("yolo")
     window2.wait_for_close()
 
 
@@ -107,7 +106,7 @@ class Line:
         )
 
 class Cell:
-    def __init__(self, x1, y1, x2, y2, win=None):
+    def __init__(self, x1, y1, x2, y2, win=None, visited=False):
         self.has_left_wall = True
         self.has_right_wall = True
         self.has_top_wall = True
@@ -125,7 +124,7 @@ class Cell:
         self.bottom_right_corner = Point(x2, y2)
 
         self._win = win
-        
+        self._visited = visited
 
     def set_walls(self, left, right, top, bottom):
         self.has_left_wall = left
@@ -198,7 +197,7 @@ class Maze:
         self, x1, y1,
         num_rows, num_cols,
         cell_size_x, cell_size_y,
-        win=None
+        win=None, seed=None
     ):
         self._x1 = x1
         self._y1 = y1
@@ -209,6 +208,9 @@ class Maze:
         self._win = win
         self._cells = None
         self._initiated = False
+        self._seed = seed
+        if seed:
+            random.seed(seed)
 
         # self._initiate()
 
@@ -221,10 +223,10 @@ class Maze:
 
         for i in range(len(self._cells)):
             for j in range(len(self._cells[i])):
-                self._cells[i][j] = Cell(starting_x, starting_y, starting_x+ self._cell_size_x, starting_y + self._cell_size_y, self._win)
-                starting_y += self._cell_size_y + 5
+                self._cells[i][j] = Cell(starting_x, starting_y, starting_x + self._cell_size_x, starting_y + self._cell_size_y, self._win)
+                starting_y += self._cell_size_y
             starting_y = self._y1
-            starting_x += self._cell_size_x + 5
+            starting_x += self._cell_size_x
 
     def _initiate(self):
         if self._initiated == False:
@@ -236,21 +238,66 @@ class Maze:
 
     def _animate(self):
         self._win.redraw()
-        time.sleep(0.1)
+        time.sleep(0.05)
 
     def _break_entrance_and_exit(self):
         self._cells[0][0].set_walls(True, True, False, True)
-        self.draw()
         self._cells[-1][-1].set_walls(True, True, True, False)
         self.draw()
         # left rgiht top bottom
+
+    def _break_walls_r(self, i, j):
+        current_cell = self._cells[i][j]
+        current_cell._visited = True
+        while True:
+            coordinates_to_visit = []
+            adjacent_cells = _get_adjacent_cells(current_cell)
+
+    def _get_adjacent_cells(self, cell):
+        adjacents = []
+        for col in self._cells:
+            for row in col:
+                center_point = row.get_cell_center()
+                print(f"{center_point.x, center_point.y}")
+
+    def _get_cell_indices(self, cell):
+        maze_nested_list = self._cells
+        cell.
+
+        """
+        (55, 55)
+        (55, 140)
+        (55, 225)
+        (55, 310)
+        (55, 395)
+        (140, 55)
+        (140, 140)
+        (140, 225)
+        (140, 310)
+        (140, 395)
+        (225, 55)
+        (225, 140)
+        (225, 225)
+        (225, 310)
+        (225, 395)
+        (310, 55)
+        (310, 140)
+        (310, 225)
+        (310, 310)
+        (310, 395)
+        (395, 55)
+        (395, 140)
+        (395, 225)
+        (395, 310)
+        (395, 395)
+        """
     
     def draw(self, fill_color="white"):
         self._initiate()
         for column in self._cells:
             for row in column:
                 self._win.draw_cell(row, fill_color)
-                # self._animate()
+                self._animate()
 
 if __name__ == "__main__":
     main()
