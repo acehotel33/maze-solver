@@ -257,12 +257,16 @@ class Maze:
         adjacents = []
         for col in self._cells:
             for row in col:
-                center_point = row.get_cell_center()
-                print(f"{center_point.x, center_point.y}")
+                print(self._get_cell_indices(row))
 
     def _get_cell_indices(self, cell):
         maze_nested_list = self._cells
-        cell.
+        cell_coordinates = (cell._x1, cell._y1)
+        for i, sublist in enumerate(maze_nested_list):
+            for j, item in enumerate(sublist):
+                if (item._x1, item._y1) == cell_coordinates:
+                    return (i, j)
+        return None
 
         """
         (55, 55)
