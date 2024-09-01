@@ -35,13 +35,17 @@ def main():
     # window.wait_for_close()
 
     window2 = Window(700,700)
-    maze = Maze(15, 15, 20, 20, 25, 25, window2)
+    maze = Maze(15, 15, 15, 15, 40, 40, window2)
     maze.draw()
     # maze._break_entrance_and_exit()
     ex_i = 0
     ex_j = 0
-    example_cell = maze._cells[ex_i][ex_j]
-    neighbor_cell = maze._cells[ex_i+1][ex_j]
+
+    maze._reset_visited()
+    
+    for col in maze._cells:
+        for cell in col:
+            print(cell._visited)
     # maze._get_adjacent_cells_indices(example_cell)
     # print(maze._get_adjacent_cells_indices(example_cell))
     # print(maze._get_adjacent_cells(example_cell))
@@ -308,9 +312,6 @@ class Maze:
                 self._break_walls_r(rand_cell_i, rand_cell_j)
                 self._win.draw_cell_move(current_cell, random_cell, undo=True)
                 
-        for col in self._cells:
-            for cell in col:
-                cell._visited = False
 
                 # print(f"\nPossible directions: \n{direction_indices} \n{possible_directions}")
                 # print(f'\nRandom direction: {self._get_cell_indices(random_cell)} of cell {random_cell}')
@@ -417,6 +418,11 @@ class Maze:
                 if (item._x1, item._y1) == cell_coordinates:
                     return (i, j)
         return None
+
+    def _reset_visited(self):
+        for col in self._cells:
+            for cell in col:
+                cell._visited=False
     
     def draw(self, fill_color="white"):
         self._initiate()
@@ -426,6 +432,7 @@ class Maze:
                 # self.enumerate_cell(row)
                 # self._get_adjacent_cells_indices(row)
                 self._animate()
+        
         self._break_entrance_and_exit()
         self._break_walls_r(0, 0)
 
