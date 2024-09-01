@@ -1,4 +1,5 @@
 from tkinter import Tk, BOTH, Canvas
+import random
 import time
 
 def main():
@@ -33,16 +34,18 @@ def main():
 
     # window.wait_for_close()
 
-    window2 = Window(500,500)
-    maze = Maze(15, 15, 5, 5, 80, 80, window2)
+    window2 = Window(700,700)
+    maze = Maze(15, 15, 7, 7, 90, 90, window2)
     maze.draw()
-    maze._break_entrance_and_exit()
+    # maze._break_entrance_and_exit()
     ex_i = 0
-    ex_j = 4
+    ex_j = 0
     example_cell = maze._cells[ex_i][ex_j]
-    maze._get_adjacent_cells_indices(example_cell)
-    print(maze._get_adjacent_cells_indices(example_cell))
-    print(maze._get_adjacent_cells(example_cell))
+    # maze._get_adjacent_cells_indices(example_cell)
+    # print(maze._get_adjacent_cells_indices(example_cell))
+    # print(maze._get_adjacent_cells(example_cell))
+
+    maze._break_walls_r(ex_i, ex_j)
 
     window2.wait_for_close()
 
@@ -253,11 +256,45 @@ class Maze:
         # left rgiht top bottom
 
     def _break_walls_r(self, i, j):
+        print(f"\nCurrently on cell {(i, j)}")
         current_cell = self._cells[i][j]
         current_cell._visited = True
         while True:
-            coordinates_to_visit = []
-            adjacent_cells = self._get_adjacent_cells_indices(current_cell)
+            possible_directions = []
+            adjacent_cells = self._get_adjacent_cells(current_cell)
+            for cell in adjacent_cells:
+                if cell != None:
+                    if cell._visited == False:
+                        possible_directions.append(cell)
+            if possible_directions == []:
+                print(f"\nNo more possible directions!")
+                current_cell.draw(self._win._canvas, cell_fill_color)
+                return
+            else:
+                random_cell = possible_directions[random.randrange(0, len(possible_directions))]
+
+                direction_indices = []
+                for direction in possible_directions:
+                    direction_indices.append(self._get_cell_indices(direction))
+
+                print(f"\nPossible directions: {direction_indices}")
+
+                random_cell_indices = self._get_cell_indices(random_cell)
+
+                print(f"\nPicked random direction of {random_cell_indices}")
+
+                rand_cell_i = random_cell_indices[0]
+                rand_cell_j = random_cell_indices[1]
+
+                self._win.draw_cell_move(current_cell, random_cell)
+                self._animate()
+                self._break_walls_r(rand_cell_i, rand_cell_j)
+                
+
+                # print(f"\nPossible directions: \n{direction_indices} \n{possible_directions}")
+                # print(f'\nRandom direction: {self._get_cell_indices(random_cell)} of cell {random_cell}')
+                return
+
 
     def _get_adjacent_cells(self, cell):
         adjacent_indices = self._get_adjacent_cells_indices(cell)
@@ -307,14 +344,14 @@ class Maze:
         if cell_i < self._num_cols-1:
             right_cell_indices = (cell_i+1, cell_j)
         
-        print(f"\nWorking on {cell}\n")
-        print(f"(i, j) = {self._get_cell_indices(cell)}\n")
-        print(f"checking i and j: ({cell_i}, {cell_j})\n")
+        # print(f"\nWorking on {cell}\n")
+        # print(f"(i, j) = {self._get_cell_indices(cell)}\n")
+        # print(f"checking i and j: ({cell_i}, {cell_j})\n")
 
-        print(f"top cell: {top_cell_indices}")
-        print(f"bottom cell: {bottom_cell_indices}")
-        print(f"left cell: {left_cell_indices}")
-        print(f"right cell: {right_cell_indices}")
+        # print(f"top cell: {top_cell_indices}")
+        # print(f"bottom cell: {bottom_cell_indices}")
+        # print(f"left cell: {left_cell_indices}")
+        # print(f"right cell: {right_cell_indices}")
 
         # top_cell = self._cells[top_cell_indices[0]][top_cell_indices[1]]
         # bottom_cell = self._cells[bottom_cell_indices[0]][bottom_cell_indices[1]]
