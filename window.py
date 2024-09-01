@@ -35,7 +35,7 @@ def main():
     # window.wait_for_close()
 
     window2 = Window(700,700)
-    maze = Maze(15, 15, 7, 7, 90, 90, window2)
+    maze = Maze(15, 15, 10, 10, 50, 50, window2)
     maze.draw()
     # maze._break_entrance_and_exit()
     ex_i = 0
@@ -46,7 +46,7 @@ def main():
     # print(maze._get_adjacent_cells_indices(example_cell))
     # print(maze._get_adjacent_cells(example_cell))
 
-    maze._break_walls_r(ex_i, ex_j)
+    
     # example_cell_indices = maze._get_cell_indices(example_cell)
     # neighbor_cell_indices = maze._get_cell_indices(neighbor_cell)
     # print(example_cell_indices)
@@ -263,16 +263,16 @@ class Maze:
 
     def _animate(self):
         self._win.redraw()
-        time.sleep(0.05)
+        time.sleep(0.01)
 
     def _break_entrance_and_exit(self):
         self._cells[0][0].set_walls(True, True, False, True)
         self._cells[-1][-1].set_walls(True, True, True, False)
-        self.draw()
+        # self.draw()
         # left rgiht top bottom
 
     def _break_walls_r(self, i, j):
-        print(f"\nCurrently on cell {(i, j)}")
+        # print(f"\nCurrently on cell {(i, j)}")
         current_cell = self._cells[i][j]
         current_cell._visited = True
         while True:
@@ -283,7 +283,7 @@ class Maze:
                     if cell._visited == False:
                         possible_directions.append(cell)
             if possible_directions == []:
-                print(f"\nNo more possible directions!")
+                # print(f"\nNo more possible directions!")
                 current_cell.draw(self._win._canvas, cell_fill_color)
                 return
             else:
@@ -293,20 +293,23 @@ class Maze:
                 for direction in possible_directions:
                     direction_indices.append(self._get_cell_indices(direction))
 
-                print(f"\nPossible directions: {direction_indices}")
+                # print(f"\nPossible directions: {direction_indices}")
 
                 random_cell_indices = self._get_cell_indices(random_cell)
 
-                print(f"\nPicked random direction of {random_cell_indices}")
+                # print(f"\nPicked random direction of {random_cell_indices}")
 
                 rand_cell_i = random_cell_indices[0]
                 rand_cell_j = random_cell_indices[1]
 
                 self._break_walls_between(current_cell, random_cell)
-                self._win.draw_cell_move(current_cell, random_cell)
+                # self._win.draw_cell_move(current_cell, random_cell)
                 self._animate()
                 self._break_walls_r(rand_cell_i, rand_cell_j)
                 
+        for col in self._cells:
+            for cell in col:
+                cell._visited = False
 
                 # print(f"\nPossible directions: \n{direction_indices} \n{possible_directions}")
                 # print(f'\nRandom direction: {self._get_cell_indices(random_cell)} of cell {random_cell}')
@@ -419,9 +422,11 @@ class Maze:
         for column in self._cells:
             for row in column:
                 self._win.draw_cell(row, fill_color)
-                self.enumerate_cell(row)
+                # self.enumerate_cell(row)
                 # self._get_adjacent_cells_indices(row)
                 self._animate()
+        self._break_entrance_and_exit()
+        self._break_walls_r(0, 0)
 
     def enumerate_cell(self, cell):
         center_point_of_cell = cell.get_cell_center()
