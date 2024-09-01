@@ -4,35 +4,6 @@ import time
 
 def main():
     print("running...")
-    # window = Window(500, 500)
-
-    # cell1 = Cell(15, 15, 185, 185)
-    # cell1.set_walls(True, False, True, True)
-    # window.draw_cell(cell1, cell_fill_color)
-
-    # cell2 = Cell(190, 15, 360, 185)
-    # cell2.set_walls(False, True, True, False)
-    # window.draw_cell(cell2, cell_fill_color)
-
-    # cell3 = Cell(190, 190, 360, 360)
-    # cell3.set_walls(True, False, False, True)
-    # window.draw_cell(cell3, cell_fill_color)
-
-    # cell4 = Cell(365, 190, 535, 360)
-    # cell4.set_walls(False, True, False, True)
-    # window.draw_cell(cell4, cell_fill_color)
-
-    # cell5 = Cell(365, 15, 535, 185)
-    # cell5.set_walls(True, True, True, False)
-    # window.draw_cell(cell5, cell_fill_color)
-    
-    # window.draw_cell_move(cell1, cell2)
-    # window.draw_cell_move(cell2, cell3)
-    # window.draw_cell_move(cell3, cell4)
-    # window.draw_cell_move(cell4, cell5)
-    # window.draw_cell_move(cell4, cell5, True)
-
-    # window.wait_for_close()
 
     window2 = Window(700,700)
     maze = Maze(15, 15, 15, 15, 40, 40, window2)
@@ -43,9 +14,10 @@ def main():
 
     maze._reset_visited()
     
-    for col in maze._cells:
-        for cell in col:
-            print(cell._visited)
+    # for col in maze._cells:
+    #     for cell in col:
+    #         print(cell._visited)
+
     # maze._get_adjacent_cells_indices(example_cell)
     # print(maze._get_adjacent_cells_indices(example_cell))
     # print(maze._get_adjacent_cells(example_cell))
@@ -307,10 +279,10 @@ class Maze:
                 rand_cell_j = random_cell_indices[1]
 
                 self._break_walls_between(current_cell, random_cell)
-                self._win.draw_cell_move(current_cell, random_cell)
-                self._animate()
+                # self._win.draw_cell_move(current_cell, random_cell)
+                # self._animate()
                 self._break_walls_r(rand_cell_i, rand_cell_j)
-                self._win.draw_cell_move(current_cell, random_cell, undo=True)
+                # self._win.draw_cell_move(current_cell, random_cell, undo=True)
                 
 
                 # print(f"\nPossible directions: \n{direction_indices} \n{possible_directions}")
@@ -344,7 +316,7 @@ class Maze:
             # break top wall of cell two
             cell_two.delete_walls(False, False, True, False)
 
-        self._animate()
+        # self._animate()
 
     def _get_adjacent_cells(self, cell):
         adjacent_indices = self._get_adjacent_cells_indices(cell)
@@ -431,10 +403,12 @@ class Maze:
                 self._win.draw_cell(row, fill_color)
                 # self.enumerate_cell(row)
                 # self._get_adjacent_cells_indices(row)
-                self._animate()
+                # self._animate()
         
         self._break_entrance_and_exit()
         self._break_walls_r(0, 0)
+        self._reset_visited()
+        self.solve()
 
     def enumerate_cell(self, cell):
         center_point_of_cell = cell.get_cell_center()
@@ -445,6 +419,46 @@ class Maze:
             text=f"{cell_indices}",
             fill="white"
         )
+
+    def solve(self):
+        starting_cell = self._cells[0][0]
+        return self._solve_r(starting_cell)
+
+    def _solve_r(self, current_cell):
+        self._animate()
+        current_cell._visited = True
+        if current_cell == self._cells[-1][-1]:
+            return True
+
+        possible_directions = []
+        adjacent_cells = self._get_adjacent_cells(current_cell)
+
+        if current_cell.has_left_wall == False:
+            if adjacent_cells[0] != None:
+                possible_directions.append(adjacent_cells[0])
+
+        if current_cell.has_right_wall == False:
+            if adjacent_cells[1] != None:
+                possible_directions.append(adjacent_cells[1])
+        
+        if current_cell.has_top_wall == False:
+            if adjacent_cells[2] != None:
+                possible_directions.append(adjacent_cells[2])
+
+        if current_cell.has_bottom_wall == False:
+            if adjacent_cells[3] != None:
+                possible_directions.append(adjacent_cells[3])
+
+        for direction in possible_directions:
+            if direction._visited == False:
+                current_cell.draw_move(self._win._canvas, direction)
+                if self._solve_r(direction):
+                    return True
+                else:
+                    current_cell.draw_move(self._win._canvas, direction, True)
+        return False
+        
+
 
 if __name__ == "__main__":
     main()
