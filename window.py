@@ -35,7 +35,7 @@ def main():
     # window.wait_for_close()
 
     window2 = Window(700,700)
-    maze = Maze(15, 15, 10, 10, 50, 50, window2)
+    maze = Maze(15, 15, 20, 20, 25, 25, window2)
     maze.draw()
     # maze._break_entrance_and_exit()
     ex_i = 0
@@ -303,9 +303,10 @@ class Maze:
                 rand_cell_j = random_cell_indices[1]
 
                 self._break_walls_between(current_cell, random_cell)
-                # self._win.draw_cell_move(current_cell, random_cell)
+                self._win.draw_cell_move(current_cell, random_cell)
                 self._animate()
                 self._break_walls_r(rand_cell_i, rand_cell_j)
+                self._win.draw_cell_move(current_cell, random_cell, undo=True)
                 
         for col in self._cells:
             for cell in col:
