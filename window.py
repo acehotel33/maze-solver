@@ -41,12 +41,18 @@ def main():
     ex_i = 0
     ex_j = 0
     example_cell = maze._cells[ex_i][ex_j]
+    neighbor_cell = maze._cells[ex_i+1][ex_j]
     # maze._get_adjacent_cells_indices(example_cell)
     # print(maze._get_adjacent_cells_indices(example_cell))
     # print(maze._get_adjacent_cells(example_cell))
 
     maze._break_walls_r(ex_i, ex_j)
-
+    # example_cell_indices = maze._get_cell_indices(example_cell)
+    # neighbor_cell_indices = maze._get_cell_indices(neighbor_cell)
+    # print(example_cell_indices)
+    # print(neighbor_cell_indices)
+    # maze._break_walls_between(example_cell, neighbor_cell)
+    # window2.redraw()
     window2.wait_for_close()
 
 
@@ -140,6 +146,16 @@ class Cell:
         self.has_right_wall = right
         self.has_top_wall = top
         self.has_bottom_wall = bottom
+
+    def delete_walls(self, left, right, top, bottom):
+        if left == True:
+            self.has_left_wall = False
+        if right == True:
+            self.has_right_wall = False
+        if top == True:
+            self.has_top_wall = False
+        if bottom == True:
+            self.has_bottom_wall = False
 
     def get_top_left_point(self):
         return Point(self._x1, self._y1)
@@ -286,6 +302,7 @@ class Maze:
                 rand_cell_i = random_cell_indices[0]
                 rand_cell_j = random_cell_indices[1]
 
+                self._break_walls_between(current_cell, random_cell)
                 self._win.draw_cell_move(current_cell, random_cell)
                 self._animate()
                 self._break_walls_r(rand_cell_i, rand_cell_j)
@@ -293,8 +310,36 @@ class Maze:
 
                 # print(f"\nPossible directions: \n{direction_indices} \n{possible_directions}")
                 # print(f'\nRandom direction: {self._get_cell_indices(random_cell)} of cell {random_cell}')
-                return
+                
+    def _break_walls_between(self, cell_one, cell_two):
+        cell_one_indices = self._get_cell_indices(cell_one)
+        cell_two_indices = self._get_cell_indices(cell_two)
 
+        if cell_two_indices[0] < cell_one_indices[0]:
+            # break left wall of cell one
+            cell_one.delete_walls(True, False, False, False)
+            # break right wall of cell two
+            cell_two.delete_walls(False, True, False, False)
+
+        if cell_two_indices[0] > cell_one_indices[0]:
+            # break right wall of cell one
+            cell_one.delete_walls(False, True, False, False)
+            # break left wall of cell two
+            cell_two.delete_walls(True, False, False, False)
+
+        if cell_two_indices[1] < cell_one_indices[1]:
+            # break top wall of cell one
+            cell_one.delete_walls(False, False, True, False)
+            # break bottom wall of cell two
+            cell_two.delete_walls(False, False, False, True)
+
+        if cell_two_indices[1] > cell_one_indices[1]:
+            # break bottom wall of cell one
+            cell_one.delete_walls(False, False, False, True)
+            # break top wall of cell two
+            cell_two.delete_walls(False, False, True, False)
+
+        self._animate()
 
     def _get_adjacent_cells(self, cell):
         adjacent_indices = self._get_adjacent_cells_indices(cell)
